@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+opencv-python
+Pillow
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+pymongo
+motor
+Jinja2
+pdf2image
+python-dotenv
+aiofiles
+httpx
