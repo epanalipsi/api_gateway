@@ -34,7 +34,8 @@ async def process_images_concurrently(sampled_images, url, headers, run_backgrou
 class TestAPI(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.host_url = 'http://localhost:9000'
+        # cls.host_url = 'http://localhost:9000'
+        cls.host_url = 'https://api-gateway-yitm.onrender.com'
         cls.token = None
         f = faker.Faker()
 
@@ -73,59 +74,59 @@ class TestAPI(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('status', res.json())
     
-    # def test_04_engine_pred(self):
-    #     with open(self.schema_path, 'r') as jsonf:
-    #         schema = json.load(jsonf)
+    def test_04_engine_pred(self):
+        with open(self.schema_path, 'r') as jsonf:
+            schema = json.load(jsonf)
         
-    #     url = self.host_url + '/engine/struct_predict'
+        url = self.host_url + '/engine/struct_predict'
         
-    #     headers = {"Authorization": "Bearer {}".format(self.token)}
+        headers = {"Authorization": "Bearer {}".format(self.token)}
         
-    #     files = random.sample(self.images_path, 1) + random.sample(self.pdf_path, 1)
+        files = random.sample(self.images_path, 1) + random.sample(self.pdf_path, 1)
 
-    #     data = asyncio.run(process_images_concurrently(
-    #         files, url, headers, False, schema
-    #     ))
-    #     for index, d in enumerate(data):
-    #         print('Index: {}\nRes: {}'.format(index, d))
+        data = asyncio.run(process_images_concurrently(
+            files, url, headers, False, schema
+        ))
+        for index, d in enumerate(data):
+            print('Index: {}\nRes: {}'.format(index, d))
     
-    # def test_05_engine_pred_background(self):
-    #     with open(self.schema_path, 'r') as jsonf:
-    #         schema = json.load(jsonf)
+    def test_05_engine_pred_background(self):
+        with open(self.schema_path, 'r') as jsonf:
+            schema = json.load(jsonf)
         
-    #     url = self.host_url + '/engine/struct_predict'
+        url = self.host_url + '/engine/struct_predict'
         
-    #     headers = {"Authorization": "Bearer {}".format(self.token)}
+        headers = {"Authorization": "Bearer {}".format(self.token)}
         
-    #     files = random.sample(self.images_path, 1)
-    #     data = asyncio.run(process_images_concurrently(
-    #         files, url, headers, False, schema
-    #     ))
+        files = random.sample(self.images_path, 1)
+        data = asyncio.run(process_images_concurrently(
+            files, url, headers, False, schema
+        ))
         
-    #     for index, d in enumerate(data):
-    #         # print('Index: {}\nRes: {}'.format(index, d))
-    #         self.__class__.job_id = d['job_id']
+        for index, d in enumerate(data):
+            # print('Index: {}\nRes: {}'.format(index, d))
+            self.__class__.job_id = d['job_id']
     
-    # def test_06_engine_status(self):
-    #     url = self.host_url + '/engine/status'
-    #     headers = {"Authorization": "Bearer {}".format(self.token)}
-    #     data = {'job_id': self.job_id}
+    def test_06_engine_status(self):
+        url = self.host_url + '/engine/status'
+        headers = {"Authorization": "Bearer {}".format(self.token)}
+        data = {'job_id': self.job_id}
         
-    #     res = httpx.post(url, data=data, headers=headers, timeout=400)
-    #     print(res.json())
+        res = httpx.post(url, data=data, headers=headers, timeout=400)
+        print(res.json())
     
         
-    # def test_07_chat(self):
-    #     url = self.host_url + '/engine/chat'
-    #     headers = {"Authorization": "Bearer {}".format(self.token)}
+    def test_07_chat(self):
+        url = self.host_url + '/engine/chat'
+        headers = {"Authorization": "Bearer {}".format(self.token)}
        
-    #     files = random.sample(self.images_path, 1)
-    #     data = asyncio.run(process_images_concurrently(
-    #         files, url, headers, False
-    #     ))
+        files = random.sample(self.images_path, 1)
+        data = asyncio.run(process_images_concurrently(
+            files, url, headers, False
+        ))
        
-    #     for index, d in enumerate(data):
-    #         print('Index: {}\nRes: {}'.format(index, d))
+        for index, d in enumerate(data):
+            print('Index: {}\nRes: {}'.format(index, d))
             
     # def test_08_test_token_limit(self):
     #     url = self.host_url + '/engine/chat'

@@ -22,7 +22,7 @@ async def regen_token(
 ):
     user = await user_collection.find_one({'email': email, 'password': password})
     if user is not None:
-        access_token_expires = timedelta(minutes=3000)
+        access_token_expires = timedelta(days=5)
         access_token = create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
         await user_collection.update_one({'_id': user['_id']}, { "$set": { "token": access_token } })
         user['user_id'] = str(user['_id'])
