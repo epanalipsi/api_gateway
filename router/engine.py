@@ -37,7 +37,7 @@ async def process_documents(schema_str: str, documents: List[UploadFile]):
     except Exception as e:
         raise RuntimeError(f"File processing failed: {e}")
 
-api_key = os.getenv('API_KEY', 'rpa_8QWKI7J1C2VTD37HR2U29ECELXO63FT31643JFUI4mpc5w')
+api_key = os.getenv('API_KEY', '')
 
 endpoint_id = os.getenv('ENDPOINT_ID', "67awaqzdmoq3fn")
 url_host = os.getenv("HOST", "https://api.runpod.ai/v2/")
