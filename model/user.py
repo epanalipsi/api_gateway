@@ -10,7 +10,7 @@ class User(BaseModel):
     role:str="user"
     password:str=""
     is_admin:bool=False
-    upload_limit:int=20
+    upload_limit:int=30
     token:str=""
     update_date:datetime=datetime.now()
     created_date:datetime=datetime.now()
@@ -24,7 +24,9 @@ class UserResponse(BaseResponse):
         
 class TokenRepsonse(BaseResponse):
     token:str=""
-    data:User=None
+    token_upload_limit:int
+    token_expiry_date:str
+    data:Optional[User]=None
 
 class ValidResponse(BaseResponse):
     username:str=""

@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Form
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Union
 from model.user import UserPageResponse, User, TokenRepsonse, BaseResponse, UserResponse, ValidResponse
 from utils.token_utils import create_access_token, decode_token
-from math import ceil
 from database.mongo_manager import database
 
 userauth_route = APIRouter(prefix="/user_auth")
@@ -15,7 +14,7 @@ async def health():
         'status': 'ok'
     }
     
-@userauth_route.post("/login", response_model=TokenRepsonse, tags=["User Authentication"])
+@userauth_route.post("/login", response_model=TokenRepsonse, tags=["User Authentication"], response_model_exclude_unset=True)
 async def regen_token(
     email:str=Form(...), 
     password:str=Form(...)
@@ -28,7 +27,10 @@ async def regen_token(
         user['user_id'] = str(user['_id'])
         del user['_id']
         
-        return TokenRepsonse(message="Login Success", token=access_token, data=user)
+        expiry_datetime = datetime.utcnow() + access_token_expires
+        expiry_str = expiry_datetime.isoformat() 
+        
+        return TokenRepsonse(message="Login Success", token=access_token, token_upload_limit=30, token_expiry_date=expiry_str)
     else:
         return BaseResponse(status=400, message="No Such User")       
 
@@ -42,12 +44,17 @@ async def register_user(
     cursor = user_collection.find({'email': email})
     length = len([document for document in await cursor.to_list(length=100)])
     if length <= 0:
-        access_token_expires = timedelta(minutes=3000)
+        access_token_expires = timedelta(days=5)
         access_token = create_access_token(data={"sub": user.dict()["username"]}, expires_delta=access_token_expires)
         user.token = access_token
+        expiry_datetime = datetime.utcnow() + access_token_expires
+        expiry_str = expiry_datetime.isoformat() 
         
         await user_collection.insert_one(user.dict())
-        return TokenRepsonse(status=200, message="User Registered", token=access_token, data=user)
+        return TokenRepsonse(
+            status=200, message="User Registered", token=access_token, data=user,
+            token_upload_limit=30, token_expiry_date=expiry_str
+        )
     else:
         return BaseResponse(status=400, message="Duplicate User")
     
