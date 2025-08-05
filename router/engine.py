@@ -37,9 +37,9 @@ async def process_documents(schema_str: str, documents: List[UploadFile]):
     except Exception as e:
         raise RuntimeError(f"File processing failed: {e}")
 
-api_key = os.getenv('API_KEY', 'rpa_8QWKI7J1C2VTD37HR2U29ECELXO63FT31643JFUI4mpc5w')
+api_key = os.getenv('API_KEY', 'rpa_6LUDMP6UM6V2ZRE5COM4EQE6PKCRK0ZP6SLP6F4G11bzrn')
 
-endpoint_id = os.getenv('ENDPOINT_ID', "67awaqzdmoq3fn")
+endpoint_id = os.getenv('ENDPOINT_ID', "xvgdikrla15ea7")
 url_host = os.getenv("HOST", "https://api.runpod.ai/v2/")
 # endpoint_id = os.getenv('ENDPOINT_ID', "")
 # url_host = os.getenv("HOST", "http://localhost:8000/")
@@ -86,7 +86,7 @@ async def struct_predict(
     system_prompt: str = Form(...),
     documents: List[UploadFile] = File(...),
     schema: str = Form(...),
-    run_background:bool=Form(False)
+    run_background:str=Form('false')
 ):
     if not prompt.strip() or not system_prompt.strip():
         return LLMResponse(message='Prompt and system_prompt cannot be empty')
@@ -95,11 +95,13 @@ async def struct_predict(
         return LLMResponse(message='At least one document is required')
 
     try:
+        run_background_bool = run_background.lower() in ("true", "1", "yes", "on")
         token = await extract_token(request)
         user = await check_and_decrement_user_limit(token)
         user_id = user["_id"]
 
         data = await process_documents(schema, documents)
+
         # Submit job
         job_input = {
             "input": {
@@ -110,9 +112,9 @@ async def struct_predict(
                 "schema": data['schema']
             }
         }
-    
-        url = get_api_url('run' if run_background else 'runsync')
-        results = await submit_jobs([job_input], url, get_api_headers(), api_key, background=run_background, is_complete=False)
+        
+        url = get_api_url('run' if run_background_bool else 'runsync')
+        results = await submit_jobs([job_input], url, get_api_headers(), api_key, endpoint_id, background=run_background, is_complete=True)
         
         res = results[0]
         job_input['output'] = res['output']
@@ -141,7 +143,7 @@ async def chat(
     prompt: str = Form(...),
     system_prompt: str = Form(...),
     documents: List[UploadFile] = File(...),
-    run_background:bool=Form(False)
+    run_background:str=Form('false')
 ):
     if not prompt.strip() or not system_prompt.strip():
         return LLMResponse(message='Prompt and system_prompt cannot be empty')
@@ -150,6 +152,7 @@ async def chat(
         return LLMResponse(message='At least one document is required')
 
     try:
+        run_background_bool = run_background.lower() in ("true", "1", "yes", "on")
         token = await extract_token(request)
         user = await check_and_decrement_user_limit(token)
         user_id = user["_id"]
@@ -163,8 +166,8 @@ async def chat(
                 "system_prompt": system_prompt,
             }
         }
-        url = get_api_url('run' if run_background else 'runsync')
-        results = await submit_jobs([job_input], url, get_api_headers(), api_key, background=run_background, is_complete=False)
+        url = get_api_url('run' if run_background_bool else 'runsync')
+        results = await submit_jobs([job_input], url, get_api_headers(), api_key, endpoint_id,  background=run_background, is_complete=True)
         res = results[0]
         job_input['output'] = res['output']
         job_input['job_id'] = res['id']

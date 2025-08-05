@@ -72,7 +72,7 @@ async def get_files(schema_path: str, files: List[UploadFile]):
         "images": images
     }
         
-async def submit_jobs(job_input, url, headers, api_key, background=False, is_complete=False):
+async def submit_jobs(job_input, url, headers, api_key, job_id, background=False, is_complete=False):
     tasks = []
     
     for job in job_input:
@@ -83,7 +83,7 @@ async def submit_jobs(job_input, url, headers, api_key, background=False, is_com
     if background:
         if is_complete:
             job_ids = [r['id'] for r in job_responses]
-            results = await poll_jobs(job_ids, '67awaqzdmoq3fn', api_key)
+            results = await poll_jobs(job_ids, job_id, api_key)
         else:
             results = job_responses
         return results
