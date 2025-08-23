@@ -14,7 +14,7 @@ async def health():
         'status': 'ok'
     }
     
-@userauth_route.post("/login", response_model=TokenRepsonse, tags=["User Authentication"], response_model_exclude_unset=True)
+@userauth_route.post("/login", tags=["User Authentication"], response_model_exclude_unset=True)
 async def regen_token(
     email:str=Form(...), 
     password:str=Form(...)

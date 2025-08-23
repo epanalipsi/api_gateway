@@ -1,10 +1,13 @@
 import typer
 import async_typer
+from database.mongo_manager import database
 
 app = async_typer.AsyncTyper(pretty_exceptions_enable=False)
 
-@app.command()
-async def foreground():
+@app.async_command()
+async def reset_db(
+    
+):
     pass
 
 if __name__ == "__main__":

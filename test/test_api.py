@@ -55,7 +55,6 @@ class TestAPI(TestCase):
         self.assertEqual(res.status_code, 200)
         
         data = res.json()
-        print(data)
         self.assertIn('token', data)
         self.__class__.token = data['token']
         

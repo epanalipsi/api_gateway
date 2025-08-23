@@ -4,6 +4,7 @@ from dotenv import dotenv_values
 
 from router.engine import engine_route
 from router.user_auth import userauth_route
+from router.doc import doc_route
 
 config = dotenv_values("deployment/deploy.env")
 origins = [
@@ -29,6 +30,7 @@ app.add_middleware(
 )
 app.include_router(engine_route)
 app.include_router(userauth_route)
+app.include_router(doc_route)
 
 @app.get('/health', tags=['Health Check'])
 async def health():
