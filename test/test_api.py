@@ -34,8 +34,8 @@ async def process_images_concurrently(sampled_images, url, headers, run_backgrou
 class TestAPI(TestCase):
     @classmethod
     def setUpClass(cls):
-        # cls.host_url = 'http://localhost:9000'
-        cls.host_url = 'https://api-gateway-yitm.onrender.com'
+        cls.host_url = 'http://localhost:9000'
+        # cls.host_url = 'https://api-gateway-yitm.onrender.com'
         cls.token = None
         f = faker.Faker()
 

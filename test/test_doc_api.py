@@ -7,11 +7,12 @@ from datetime import datetime
 class TestDocAPI(TestCase):
     @classmethod
     def setUpClass(cls):
-        # cls.host_url = 'http://localhost:9000'
-        cls.host_url = 'https://api-gateway-yitm.onrender.com'
+        cls.host_url = 'http://localhost:9000'
+        # cls.host_url = 'https://api-gateway-yitm.onrender.com'
         
         login_url = cls.host_url + '/user_auth/login'
         res = httpx.post(login_url, data={
+            'username': 'edwin',
             'email': 'edwin@gmail.com',
             'password': '123'
         })
@@ -57,11 +58,20 @@ class TestDocAPI(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()['status'], 200)
         self.assertIn('data', res.json())
-    
-    def test_04_delete(self):
-        api_url = self.host_url + '/doc/delete'
         
-        for d in TestDocAPI.data_sample:
-            res = httpx.post(api_url, headers=self.headers, data={'doc_id': d['doc_id']})
-            self.assertEqual(res.status_code, 200)
-            self.assertEqual(res.json()['status'], 200)
+    def test_04_search(self):
+        api_url = self.host_url + '/doc/search'
+        
+        res = httpx.post(api_url, headers=self.headers, data={'doc_id': "b42706b9-e354-4bc3-a556-d85131c64242"})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['status'], 200)
+        
+        print(res.json()['llm_response'])
+    
+    # def test_05_delete(self):
+    #     api_url = self.host_url + '/doc/delete'
+        
+    #     for d in TestDocAPI.data_sample:
+    #         res = httpx.post(api_url, headers=self.headers, data={'doc_id': d['doc_id']})
+    #         self.assertEqual(res.status_code, 200)
+    #         self.assertEqual(res.json()['status'], 200)

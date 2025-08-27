@@ -1,5 +1,5 @@
 from model import BaseModel, BaseResponse
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 import uuid
 from pydantic import Field
@@ -23,3 +23,4 @@ class Document(BaseModel):
 class DocResponse(BaseResponse):
     data:Optional[List[Document]] = []
     total_page_response:Optional[int]=0
+    llm_response:Optional[Dict[str, Any]] = Field(default_factory=dict)

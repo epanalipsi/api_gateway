@@ -8,6 +8,7 @@ from math import ceil
 
 doc_route = APIRouter(prefix="/doc")
 doc_collection = database['document']
+llm_response_collection = database['llm_response']
 
 @doc_route.get('/health', tags=["Documents"])
 async def health():
@@ -41,7 +42,25 @@ async def list_doc(page:int=Form(...), page_size:int=Form(...)):
     ).skip(skip).limit(page_size)
     results = await cursor.to_list(length=None)
     
-    return DocResponse(message="success", total_page_response=total_pages, data=results)
+    return DocResponse(message="success", total_page_response=total_pages, data=results).model_dump(exclude='llm_response')
+
+@doc_route.post("/search", dependencies=[Depends(JWTBearer())], tags=['Documents'])
+async def search_doc(doc_id:str=Form(...)):
+    try:
+        result = await doc_collection.find_one({"doc_id": doc_id})
+        
+        llm_response_output = {}
+        if result['llm_job_id'] != "":
+            llm_response = await llm_response_collection.find_one({'id': result['llm_job_id']})
+            if llm_response:
+                llm_response_output = llm_response['output']['data']
+        
+        if result is not None:
+            return DocResponse(message="success", data=[result], llm_response=llm_response_output)
+        else:
+            return BaseResponse(status=400, message="error no data found")
+    except Exception as err:
+        return BaseResponse(status=400, message=str(err))
 
 @doc_route.post("/update", dependencies=[Depends(JWTBearer())], tags=['Documents'])
 async def update_doc(doc_req:Document):
