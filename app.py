@@ -17,7 +17,7 @@ origins = [
 ]
 tags_metadata = [
     {"name": "Engine", "description": "Calling the LLM Engine"},
-    {"name": "Doc", "description": "Document API"},
+    {"name": "Documents", "description": "Document API / Document Records"},
     {"name": "User Authentication", "description": "User Credential and Authentication"},
     {"name": "Health Check", "description": "Health Check API"}
 ]
