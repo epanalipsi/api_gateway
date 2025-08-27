@@ -12,3 +12,4 @@ pdf2image
 python-dotenv
 aiofiles
 httpx
+orjson
