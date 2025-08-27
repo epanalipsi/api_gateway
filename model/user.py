@@ -24,8 +24,6 @@ class UserResponse(BaseResponse):
         
 class TokenRepsonse(BaseResponse):
     token:str=""
-    token_upload_limit:int
-    token_expiry_date:str
     data:Optional[User]=None
 
 class ValidResponse(BaseResponse):

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from dotenv import dotenv_values
 
 from router.engine import engine_route
@@ -16,11 +17,12 @@ origins = [
 ]
 tags_metadata = [
     {"name": "Engine", "description": "Calling the LLM Engine"},
+    {"name": "Doc", "description": "Document API"},
     {"name": "User Authentication", "description": "User Credential and Authentication"},
     {"name": "Health Check", "description": "Health Check API"}
 ]
 
-app = FastAPI(openapi_tags=tags_metadata)
+app = FastAPI(openapi_tags=tags_metadata, default_response_class=ORJSONResponse)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

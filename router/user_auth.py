@@ -53,7 +53,7 @@ async def register_user(
         await user_collection.insert_one(user.dict())
         return TokenRepsonse(
             status=200, message="User Registered", token=access_token, data=user,
-            token_upload_limit=30, token_expiry_date=expiry_str
+            token_expiry_date=expiry_str
         )
     else:
         return BaseResponse(status=400, message="Duplicate User")

@@ -1,24 +1,14 @@
 import httpx
 import asyncio
-from PIL import Image
+
 import io
 import base64
 import time
 import aiofiles
 import json
-from pdf2image import convert_from_bytes
-from fastapi import UploadFile, File
-from typing import List
 
-def read_file(source):
-    if isinstance(source, Image.Image):
-        buffer = io.BytesIO()
-        source.save(buffer, format='JPEG')
-        buffer.seek(0)
-        return base64.b64encode(buffer.read()).decode('utf-8')
-    elif isinstance(source, str):
-        with open(source, 'rb') as f:
-            return base64.b64encode(f.read()).decode('utf-8')
+from typing import List
+from fastapi import UploadFile
 
 async def send_request(job_input, url, headers, timeout=300):
     try:
@@ -39,38 +29,6 @@ async def poll_jobs(job_ids, endpoint_id, api_key, timeout=300, poll_interval=5)
         return {"id": job_id, "status": "TIMEOUT"}
 
     return await asyncio.gather(*[poll_one(jid) for jid in job_ids])
-
-async def get_files(schema_path: str, files: List[UploadFile]):
-    images = []
-
-    for file in files:
-        content = await file.read()
-        file_type = file.content_type or file.filename.lower()
-        try:
-            if 'pdf' in file_type:
-                # Convert PDF to images
-                pdf_images = convert_from_bytes(content)
-                for idx, page_img in enumerate(pdf_images):
-                    images.append(read_file(page_img))
-            else:
-                img = Image.open(io.BytesIO(content)).convert("RGB")
-                images.append(read_file(img))
-        except Exception as e:
-            raise ValueError(f"Failed to parse file {file.filename}: {e}")
-
-    # Parse the schema JSON string
-    try:
-        if schema_path is not None:
-            schema = json.loads(schema_path)
-        else:
-            schema = None
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in schema_path: {e}")
-
-    return {
-        "schema": schema,
-        "images": images
-    }
         
 async def submit_jobs(job_input, url, headers, api_key, job_id, background=False, is_complete=False):
     tasks = []
@@ -79,7 +37,6 @@ async def submit_jobs(job_input, url, headers, api_key, job_id, background=False
         tasks.append(send_request(job, url, headers))
         
     job_responses = await asyncio.gather(*tasks)
-
     if background:
         if is_complete:
             job_ids = [r['id'] for r in job_responses]
