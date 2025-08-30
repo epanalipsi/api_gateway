@@ -32,7 +32,7 @@ async def handle_document(files:List[UploadFile]):
 
                 tasks = [
                     asyncio.to_thread(lambda i=i, img=img: Page(
-                        page_number=i+1, page=encode_image(img), 
+                        page_number=i+1, page=encode_image(img, format='JPEG'), 
                         page_name=os.path.basename(img.filename)
                     ))
                     for i, img in enumerate(images)

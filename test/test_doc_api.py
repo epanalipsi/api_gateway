@@ -7,8 +7,8 @@ from datetime import datetime
 class TestDocAPI(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.host_url = 'http://localhost:9000'
-        # cls.host_url = 'https://api-gateway-yitm.onrender.com'
+        # cls.host_url = 'http://localhost:9000'
+        cls.host_url = 'https://api-gateway-yitm.onrender.com'
         
         login_url = cls.host_url + '/user_auth/login'
         res = httpx.post(login_url, data={
